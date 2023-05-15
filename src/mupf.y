@@ -10,9 +10,11 @@
 
 int yylex();
 extern FILE *yyin;
+extern int yylineno;
 
 void yyerror(char *s) {
-    fprintf(stderr, "Some error may have occured.\nIf you want to learn more about it, please consult the documentation: https://en.wikipedia.org/wiki/Bison\n\n(hint:  %s)\n", s);
+    fprintf(stderr, "\nSome error may have occured.\nIf you want to learn more about it, please consult the documentation: https://en.wikipedia.org/wiki/Bison\n\n(hint:  %s)\n", s);
+    fprintf(stderr, "Line: %d\n", yylineno);
     exit(-1);
 }
 
@@ -31,8 +33,8 @@ void yyerror(char *s) {
 %type <str> STR
 %type <id> ID
 
-%type <num> nexp
-%type <str> cexp
+%type <num> n_exp
+%type <str> ch_exp
 
 %left '-' '+'
 %left '*' '/'
@@ -43,30 +45,30 @@ void yyerror(char *s) {
 %%
 
 prog:
-  YYEOF             { return 0; }
-| exp  ';' prog     { printf("Parsed exp\n");  }
-| stmt ';' prog     { printf("Parsed stmt\n"); }
+  YYEOF             { printf("Parsed till the end of file\n"); return 0; }
+| exp  ';'          { printf("Parsed exp\n");  }
+| stmt ';'          { printf("Parsed stmt\n"); }
 ;
 
 exp:
-  nexp
-| cexp
+  n_exp
+| ch_exp
 ;
 
-nexp:
+n_exp:
   NUM
-| nexp '+' nexp   { $$ = $1 + $3; }
-| nexp '-' nexp   { $$ = $1 - $3; }
-| nexp '*' nexp   { $$ = $1 * $3; }
-| nexp '/' nexp   { $$ = $1 / $3; }
+| n_exp '+' n_exp   { $$ = $1 + $3; }
+| n_exp '-' n_exp   { $$ = $1 - $3; }
+| n_exp '*' n_exp   { $$ = $1 * $3; }
+| n_exp '/' n_exp   { $$ = $1 / $3; }
 ;
 
-cexp:
+ch_exp:
   STR
 ;
 
 stmt:
-    ECHO_STMT cexp     { printf("%s\n", $2); }
+    ECHO_STMT ch_exp     { printf("%s\n", $2); }
 ;
 
 %%

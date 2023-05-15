@@ -68,7 +68,7 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 21 "./src/mupf.y"
+#line 23 "./src/mupf.y"
 
     double num;
     char *str;

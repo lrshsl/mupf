@@ -80,14 +80,16 @@
 
 int yylex();
 extern FILE *yyin;
+extern int yylineno;
 
 void yyerror(char *s) {
-    fprintf(stderr, "Some error may have occured.\nIf you want to learn more about it, please consult the documentation: https://en.wikipedia.org/wiki/Bison\n\n(hint:  %s)\n", s);
+    fprintf(stderr, "\nSome error may have occured.\nIf you want to learn more about it, please consult the documentation: https://en.wikipedia.org/wiki/Bison\n\n(hint:  %s)\n", s);
+    fprintf(stderr, "Line: %d\n", yylineno);
     exit(-1);
 }
 
 
-#line 91 "./build/mupf.tab.c"
+#line 93 "./build/mupf.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -133,8 +135,8 @@ enum yysymbol_kind_t
   YYSYMBOL_YYACCEPT = 15,                  /* $accept  */
   YYSYMBOL_prog = 16,                      /* prog  */
   YYSYMBOL_exp = 17,                       /* exp  */
-  YYSYMBOL_nexp = 18,                      /* nexp  */
-  YYSYMBOL_cexp = 19,                      /* cexp  */
+  YYSYMBOL_n_exp = 18,                     /* n_exp  */
+  YYSYMBOL_ch_exp = 19,                    /* ch_exp  */
   YYSYMBOL_stmt = 20                       /* stmt  */
 };
 typedef enum yysymbol_kind_t yysymbol_kind_t;
@@ -463,7 +465,7 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  11
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   21
+#define YYLAST   20
 
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  15
@@ -472,7 +474,7 @@ union yyalloc
 /* YYNRULES -- Number of rules.  */
 #define YYNRULES  13
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  24
+#define YYNSTATES  22
 
 /* YYMAXUTOK -- Last valid token kind.  */
 #define YYMAXUTOK   263
@@ -522,8 +524,8 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int8 yyrline[] =
 {
-       0,    46,    46,    47,    48,    52,    53,    57,    58,    59,
-      60,    61,    65,    69
+       0,    48,    48,    49,    50,    54,    55,    59,    60,    61,
+      62,    63,    67,    71
 };
 #endif
 
@@ -541,7 +543,7 @@ static const char *const yytname[] =
 {
   "\"end of file\"", "error", "\"invalid token\"", "LF", "ID", "NUM",
   "STR", "ECHO_STMT", "'-'", "'+'", "'*'", "'/'", "'^'", "NEG", "';'",
-  "$accept", "prog", "exp", "nexp", "cexp", "stmt", YY_NULLPTR
+  "$accept", "prog", "exp", "n_exp", "ch_exp", "stmt", YY_NULLPTR
 };
 
 static const char *
@@ -551,7 +553,7 @@ yysymbol_name (yysymbol_kind_t yysymbol)
 }
 #endif
 
-#define YYPACT_NINF (-13)
+#define YYPACT_NINF (-8)
 
 #define yypact_value_is_default(Yyn) \
   ((Yyn) == YYPACT_NINF)
@@ -565,9 +567,9 @@ yysymbol_name (yysymbol_kind_t yysymbol)
    STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-       0,   -13,   -13,   -13,    -5,     4,   -12,     1,   -13,     5,
-     -13,   -13,     0,    15,    15,    15,    15,     0,   -13,     3,
-       3,   -13,   -13,   -13
+       0,    -8,    -8,    -8,     8,    15,     3,    -7,    -8,     4,
+      -8,    -8,    -8,    11,    11,    11,    11,    -8,     2,     2,
+      -8,    -8
 };
 
 /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -576,14 +578,14 @@ static const yytype_int8 yypact[] =
 static const yytype_int8 yydefact[] =
 {
        0,     2,     7,    12,     0,     0,     0,     5,     6,     0,
-      13,     1,     0,     0,     0,     0,     0,     0,     3,     9,
-       8,    10,    11,     4
+      13,     1,     3,     0,     0,     0,     0,     4,     9,     8,
+      10,    11
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-     -13,    -9,   -13,     2,    17,   -13
+      -8,    -8,    -8,    -5,    16,    -8
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
@@ -597,16 +599,16 @@ static const yytype_int8 yydefgoto[] =
    number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int8 yytable[] =
 {
-       1,     3,    12,    18,    11,     2,     3,     4,    23,    13,
-      14,    15,    16,    15,    16,    19,    20,    21,    22,    17,
-       2,    10
+       1,    13,    14,    15,    16,     2,     3,     4,    18,    19,
+      20,    21,    15,    16,     3,    11,     2,    12,    17,     0,
+      10
 };
 
 static const yytype_int8 yycheck[] =
 {
-       0,     6,    14,    12,     0,     5,     6,     7,    17,     8,
-       9,    10,    11,    10,    11,    13,    14,    15,    16,    14,
-       5,     4
+       0,     8,     9,    10,    11,     5,     6,     7,    13,    14,
+      15,    16,    10,    11,     6,     0,     5,    14,    14,    -1,
+       4
 };
 
 /* YYSTOS[STATE-NUM] -- The symbol kind of the accessing symbol of
@@ -614,8 +616,8 @@ static const yytype_int8 yycheck[] =
 static const yytype_int8 yystos[] =
 {
        0,     0,     5,     6,     7,    16,    17,    18,    19,    20,
-      19,     0,    14,     8,     9,    10,    11,    14,    16,    18,
-      18,    18,    18,    16
+      19,     0,    14,     8,     9,    10,    11,    14,    18,    18,
+      18,    18
 };
 
 /* YYR1[RULE-NUM] -- Symbol kind of the left-hand side of rule RULE-NUM.  */
@@ -628,7 +630,7 @@ static const yytype_int8 yyr1[] =
 /* YYR2[RULE-NUM] -- Number of symbols on the right-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr2[] =
 {
-       0,     2,     1,     3,     3,     1,     1,     1,     3,     3,
+       0,     2,     1,     2,     2,     1,     1,     1,     3,     3,
        3,     3,     1,     2
 };
 
@@ -1093,55 +1095,55 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* prog: $end  */
-#line 46 "./src/mupf.y"
-                    { return 0; }
-#line 1099 "./build/mupf.tab.c"
-    break;
-
-  case 3: /* prog: exp ';' prog  */
-#line 47 "./src/mupf.y"
-                    { printf("Parsed exp\n");  }
-#line 1105 "./build/mupf.tab.c"
-    break;
-
-  case 4: /* prog: stmt ';' prog  */
 #line 48 "./src/mupf.y"
+                    { printf("Parsed till the end of file\n"); return 0; }
+#line 1101 "./build/mupf.tab.c"
+    break;
+
+  case 3: /* prog: exp ';'  */
+#line 49 "./src/mupf.y"
+                    { printf("Parsed exp\n");  }
+#line 1107 "./build/mupf.tab.c"
+    break;
+
+  case 4: /* prog: stmt ';'  */
+#line 50 "./src/mupf.y"
                     { printf("Parsed stmt\n"); }
-#line 1111 "./build/mupf.tab.c"
+#line 1113 "./build/mupf.tab.c"
     break;
 
-  case 8: /* nexp: nexp '+' nexp  */
-#line 58 "./src/mupf.y"
-                  { (yyval.num) = (yyvsp[-2].num) + (yyvsp[0].num); }
-#line 1117 "./build/mupf.tab.c"
-    break;
-
-  case 9: /* nexp: nexp '-' nexp  */
-#line 59 "./src/mupf.y"
-                  { (yyval.num) = (yyvsp[-2].num) - (yyvsp[0].num); }
-#line 1123 "./build/mupf.tab.c"
-    break;
-
-  case 10: /* nexp: nexp '*' nexp  */
+  case 8: /* n_exp: n_exp '+' n_exp  */
 #line 60 "./src/mupf.y"
-                  { (yyval.num) = (yyvsp[-2].num) * (yyvsp[0].num); }
-#line 1129 "./build/mupf.tab.c"
+                    { (yyval.num) = (yyvsp[-2].num) + (yyvsp[0].num); }
+#line 1119 "./build/mupf.tab.c"
     break;
 
-  case 11: /* nexp: nexp '/' nexp  */
+  case 9: /* n_exp: n_exp '-' n_exp  */
 #line 61 "./src/mupf.y"
-                  { (yyval.num) = (yyvsp[-2].num) / (yyvsp[0].num); }
-#line 1135 "./build/mupf.tab.c"
+                    { (yyval.num) = (yyvsp[-2].num) - (yyvsp[0].num); }
+#line 1125 "./build/mupf.tab.c"
     break;
 
-  case 13: /* stmt: ECHO_STMT cexp  */
-#line 69 "./src/mupf.y"
-                       { printf("%s\n", (yyvsp[0].str)); }
-#line 1141 "./build/mupf.tab.c"
+  case 10: /* n_exp: n_exp '*' n_exp  */
+#line 62 "./src/mupf.y"
+                    { (yyval.num) = (yyvsp[-2].num) * (yyvsp[0].num); }
+#line 1131 "./build/mupf.tab.c"
+    break;
+
+  case 11: /* n_exp: n_exp '/' n_exp  */
+#line 63 "./src/mupf.y"
+                    { (yyval.num) = (yyvsp[-2].num) / (yyvsp[0].num); }
+#line 1137 "./build/mupf.tab.c"
+    break;
+
+  case 13: /* stmt: ECHO_STMT ch_exp  */
+#line 71 "./src/mupf.y"
+                         { printf("%s\n", (yyvsp[0].str)); }
+#line 1143 "./build/mupf.tab.c"
     break;
 
 
-#line 1145 "./build/mupf.tab.c"
+#line 1147 "./build/mupf.tab.c"
 
       default: break;
     }
@@ -1334,7 +1336,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 72 "./src/mupf.y"
+#line 74 "./src/mupf.y"
 
 
 int main(int argc, char *argv[]) {
