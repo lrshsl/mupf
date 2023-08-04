@@ -11,7 +11,7 @@ CC = gcc
 CFLAGS = -Wall -Wextra
 YACC = bison
 YFLAGS = -d -H
-LEX = flex
+LEX = lex
 LFLAGS =
 
 .PHONY: all clean
