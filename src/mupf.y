@@ -1,24 +1,19 @@
 %{
 
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
+#ifndef INCLUDE_C_INCLUDED
+#define INCLUDE_C_INCLUDED
 
-#define YYDEBUG 0
+#include "../src/include.c"
 
-extern int yylex();
-extern FILE *yyin;
-extern int yylineno;
+#endif
 
-void yyerror(char *s) {
-	fprintf(stderr, "\nSome error may have occured.\n<ErrMsg>: %s", s);
-	fprintf(stderr, "Line: %d\n", yylineno);
-	exit(-1);
-}
 
 %}
+
+
+
+
+/* Bison/Yacc definitions and declarations */
 
 %union {
 	int num;
@@ -41,16 +36,16 @@ void yyerror(char *s) {
 //%right '^'
 //%precedence NEG
 
-/*
-prog1:
-  YYEOF							 { printf("<<Parsed till the end of file>>\n"); return 0; }
-| exp  ';' lines     { printf("<<Parsed exp>>\n");  }
-| stmt ';' lines     { printf("<<Parsed stmt>>\n"); }
-;
-*/
 
+
+
+
+
+/* Grammar */
 
 %%
+
+
 
 prog:
   linecontent ';' prog
@@ -65,15 +60,17 @@ linecontent:
 
 
 exp:
-  n_exp
-| ch_exp
+  n_exp           { printf("[[ParsedNumExpression]] %d\n", $<num>$); }
+| ch_exp          { printf("[[ParsedCharExpression]] %s\n", $<str>$); }
 ;
 
 n_exp:
-  n_exp '+' n_exp   { $$ = $1 + $3; printf("<<FoundAddition>> %d + %d = %d\n", $1, $3, $$); }
+  '(' n_exp ')'     { $$ = $2; }
+| n_exp '+' n_exp   { $$ = $1 + $3; printf("<<FoundAddition>> %d + %d = %d\n", $1, $3, $$); }
 | n_exp '-' n_exp   { $$ = $1 - $3; }
 | n_exp '*' n_exp   { $$ = $1 * $3; }
 | n_exp '/' n_exp   { $$ = $1 / $3; }
+| '-' NUM           { $$ = -$2; }
 | NUM
 ;
 
@@ -87,27 +84,11 @@ stmt:
 
 %%
 
-int main(int argc, char *argv[]) {
-  //yydebug = 1;
-  // Check args
-  if (argc != 2) {
-    char msg[] = "Invalud number of arguments";
-    sprintf(msg, "Usage: %s <file>", argv[0]);
-    yyerror(msg);
-    return 1;
-  }
-  // Open input file
-  yyin = fopen(argv[1], "r");
-  if (!yyin) {
-    yyerror("Could not open file");
-    return 1;
-  }
-  // Main loop
-  do {
-    yyparse();
-  } while (!feof(yyin));
-  return 0;
-}
+
+
+/* Loaded afterwards */
+
+#include "../src/main.c"
 
 
 

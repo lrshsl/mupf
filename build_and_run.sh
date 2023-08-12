@@ -2,7 +2,7 @@
 
 if [[ $0 = "dbg" ]]; then
    make dbg
-   ./mupf $@
+   ./mupf $@:1    # Slices from 1 to end
 else
    make
    ./mupf $@
