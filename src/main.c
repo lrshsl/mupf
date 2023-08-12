@@ -18,17 +18,20 @@ int main(int argc, char *argv[]) {
     /* Open input file */
     yyin = fopen(argv[1], "r");
     if (!yyin) {
-      yyerror("Could not open file");
+      char msg[100];
+      sprintf(msg, "Could not open file: '%s'", argv[1]);
+      yyerror(msg);
       return 1;
     }
   } else {
     /* Error */
     char msg[1100] = "Invalid number of arguments:";
-    int i=0, len=0;
+    int i=1, len=0;
     char argstr[1000] = {'\0'};
     for (; i<argc; ++i) {
       strcpy(argstr+len, argv[i]);
       len += strlen(argv[i]);
+      argstr[len++] = ' ';
       if (len > 1000) {
         yyerror("<<Internal Error>> msg longer than 1000 chars\n");
         return 2;
