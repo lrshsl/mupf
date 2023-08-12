@@ -6,14 +6,14 @@
 #include <string.h>
 #include <ctype.h>
 
-#define YYDEBUG 1
+#define YYDEBUG 0
 
-int yylex();
+extern int yylex();
 extern FILE *yyin;
 extern int yylineno;
 
 void yyerror(char *s) {
-	fprintf(stderr, "\nSome error may have occured.\nIf you want to learn more about it, please consult the documentation: https://en.wikipedia.org/wiki/Bison\n\n(hint:  %s)\n", s);
+	fprintf(stderr, "\nSome error may have occured.\n<ErrMsg>: %s", s);
 	fprintf(stderr, "Line: %d\n", yylineno);
 	exit(-1);
 }
@@ -38,8 +38,8 @@ void yyerror(char *s) {
 
 %left '-' '+'
 %left '*' '/'
-%right '^'
-%precedence NEG
+//%right '^'
+//%precedence NEG
 
 /*
 prog1:
@@ -53,10 +53,12 @@ prog1:
 %%
 
 prog:
-| linecontent ';' prog
+  linecontent ';' prog
+| linecontent YYEOF
 ;
 
 linecontent:
+  %empty
 | exp
 | stmt
 ;
@@ -86,25 +88,25 @@ stmt:
 %%
 
 int main(int argc, char *argv[]) {
-	yydebug = 1;
-	// Check args
-	if (argc != 2) {
-		char msg[] = "Invalud number of arguments";
-		sprintf(msg, "Usage: %s <file>", argv[0]);
-		yyerror(msg);
-		return 1;
-	}
-	// Open input file
-	yyin = fopen(argv[1], "r");
-	if (!yyin) {
-		yyerror("Could not open file");
-		return 1;
-	}
-	// Main loop
-	do {
-		yyparse();
-	} while (!feof(yyin));
-	return 0;
+  //yydebug = 1;
+  // Check args
+  if (argc != 2) {
+    char msg[] = "Invalud number of arguments";
+    sprintf(msg, "Usage: %s <file>", argv[0]);
+    yyerror(msg);
+    return 1;
+  }
+  // Open input file
+  yyin = fopen(argv[1], "r");
+  if (!yyin) {
+    yyerror("Could not open file");
+    return 1;
+  }
+  // Main loop
+  do {
+    yyparse();
+  } while (!feof(yyin));
+  return 0;
 }
 
 
