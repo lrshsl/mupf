@@ -22,7 +22,8 @@ YFLAGS_REL = -d --color=yes --warnings=all --locations
 YFLAGS_DBG = -d --color=yes -t --warnings=all \
 				 -g --html=build/out/graph.html \
 				 --locations --file-prefix=dbg \
-				 --report=all, --report-file=build/out/report
+				 --report=all, --report-file=build/out/report \
+				 -Wcounterexamples
 # Flags:
 # 	-d		Produce header
 # 	-t		Debug information
@@ -34,7 +35,7 @@ LEX = lex
 LFLAGS_REL =
 #LFLAGS_DBG = -d -T
 
-.PHONY: all run dbg clean
+.PHONY: all dbg clean
 .SILENT: clean
 
 
