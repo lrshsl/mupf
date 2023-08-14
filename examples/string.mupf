@@ -1,0 +1,7 @@
+
+"string";
+
+"this is a string as well"; // Comment
+
+
+"str" <> "-" <> "concat";

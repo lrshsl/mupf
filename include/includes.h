@@ -1,6 +1,10 @@
 
-#include <math.h>
+
+#ifndef INCLUDES_INCLUDED
+#define INCLUDES_INCLUDED
+
 #include <stdio.h>
+#include <math.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
@@ -11,10 +15,7 @@ extern int yylex();
 extern int yyparse();
 extern FILE *yyin;
 extern int yylineno;
+extern int fileno(FILE *file);
 
-void yyerror(char *s) {
-	fprintf(stderr, "\nSome error may have occured.\n<ErrMsg>: %s\n", s);
-	fprintf(stderr, "Line: %d\n", yylineno);
-	exit(-1);
-}
 
+#endif /* INCLUDES_INCLUDED */

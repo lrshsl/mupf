@@ -6,4 +6,11 @@ Yet another Markup language with yet another compiler built using yet another co
 - [X] Basic lexer using [GNU lex]
 - [X] Basic parser using [GNU Bison]
 - [X] File Input
-- [ ] Stdin
+- [X] Stdin
+- [ ] Generate output
+    - [ ] HTML
+    - [ ] CSS
+
+##### Features
+- [X] Calculator
+- [ ] Markup

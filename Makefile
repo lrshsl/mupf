@@ -5,11 +5,11 @@ DBG_BIN = mupf_dbg
 SRC = ./src
 BUILD = ./build
 CSOURCES = $(BUILD)/$(BIN).tab.c \
-			  $(BUILD)/$(BIN).tab.h \
-			  $(BUILD)/lex.yy.c
+			  $(BUILD)/lex.yy.c \
+			  $(wildcard src/*.c)
 C_DBG_SOURCES = $(BUILD)/$(BIN).dbg.tab.c \
-					 $(BUILD)/$(BIN).dbg.tab.h \
-					 $(BUILD)/lex.dbg.yy.c
+					 $(BUILD)/lex.dbg.yy.c \
+					 $(wildcard src/*.c)
 LSOURCES = $(SRC)/mupf.l
 YSOURCES = $(SRC)/mupf.y
 
@@ -31,7 +31,7 @@ YFLAGS_DBG = -d --color=yes -t --warnings=all \
 # 	-r		Report
 # 	-v		Verbose
 
-LEX = lex
+LEX = flex
 LFLAGS_REL =
 #LFLAGS_DBG = -d -T
 

@@ -1,19 +1,12 @@
 %{
 
-#ifndef INCLUDE_C_INCLUDED
-#define INCLUDE_C_INCLUDED
-
-#include "../src/include.c"
-
-#endif
-
+   #include "../include/includes.h"
+   #include "../include/util.h"
+   #include "../include/main.h"
 
 %}
 
 
-
-
-/* Bison/Yacc definitions and declarations */
 
 %union {
 	int num;
@@ -22,6 +15,7 @@
 }
 
 %token LF ID NUM STR
+%token POW OP_CONCAT
 %token ECHO_STMT
 
 %type <num> NUM
@@ -31,28 +25,26 @@
 %type <num> n_exp
 %type <str> ch_exp
 
+%left OP_CONCAT
 %left '-' '+'
 %left '*' '/'
-//%right '^'
+%right POW
 //%precedence NEG
 
 
 
 
-
-
-/* Grammar */
-
 %%
 
 
 
+
 prog:
-  linecontent ';' prog
-| linecontent YYEOF
+  line
+| line ';' prog
 ;
 
-linecontent:
+line:
   %empty
 | exp
 | stmt
@@ -60,35 +52,39 @@ linecontent:
 
 
 exp:
-  n_exp           { printf("[[ParsedNumExpression]] %d\n", $<num>$); }
-| ch_exp          { printf("[[ParsedCharExpression]] %s\n", $<str>$); }
+  n_exp           { printf("[[ParsedNumExpression]] %d\n", $1); }
+| ch_exp          { printf("[[ParsedCharExpression]] %s\n", $1); $<str>$ = $1; }
 ;
 
 n_exp:
   '(' n_exp ')'     { $$ = $2; }
-| n_exp '+' n_exp   { $$ = $1 + $3; printf("<<FoundAddition>> %d + %d = %d\n", $1, $3, $$); }
-| n_exp '-' n_exp   { $$ = $1 - $3; }
+| n_exp POW n_exp   { $$ = ipow($1, $3); }
 | n_exp '*' n_exp   { $$ = $1 * $3; }
 | n_exp '/' n_exp   { $$ = $1 / $3; }
+| n_exp '+' n_exp   { $$ = $1 + $3; }
+| n_exp '-' n_exp   { $$ = $1 - $3; }
 | '-' NUM           { $$ = -$2; }
 | NUM
 ;
 
 ch_exp:
-  STR
+  ch_exp OP_CONCAT ch_exp  {
+    char *result = (char *)malloc((strlen($1) + strlen($3)) * sizeof(char));
+    if (!$$) {
+       yyerror("Can't allocate more memory for str concatenation!\n");
+       exit(2);
+    } else {
+       strcpy(result, $1);
+       strcat(result, $3);
+    }
+    printf("Concatenating strings: %s + %s = %s\n", $1, $3, result);
+    $$ = result; }
+| STR
 ;
 
 stmt:
 	ECHO_STMT ch_exp     { printf("%s\n", $2); }
 ;
-
-%%
-
-
-
-/* Loaded afterwards */
-
-#include "../src/main.c"
 
 
 
