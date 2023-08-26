@@ -21,26 +21,73 @@ cmt         \/\/[^\n\r\cr]*
 lf          [\r\n\cr{cmt}]+
 id          [a-zA-Z_][a-zA-Z0-9_]*
 num         [0-9][0-9_]*(\.?[0-9_]+)?
-str         \"([^\\\"]|\\.)*\"
 
 
         char string_buf[MAX_STR_CONST];
         char *string_buf_ptr;
 
 %x str
+%x cmt
 
 %%
 
 
 
 {ws}          /* ignore whitespace */
-{cmt}         /* ignore comments */
-{lf}          //return LF;
+{lf}          /* return LF;        */
 
 echo          return ECHO_STMT;
 
 {id}          { yylval.id = yytext; return ID; }
 {num}         { yylval.num = atoi(yytext); return NUM; }
+
+
+"//"          BEGIN(cmt);
+
+<cmt>{
+   [^\n\/]+  while (*yytext++) { }
+
+   "//" BEGIN(INITIAL);
+   "\n" BEGIN(INITIAL);
+
+   "/"  yytext++;
+}
+
+
+\"           { string_buf_ptr = string_buf; BEGIN(str); }
+
+<str>{
+   [^\\\n\"]+ {
+      /* default: no escape sequence, newline or closing quote */
+      char *yptr = yytext;
+
+      while ( *yptr ) {
+         *string_buf_ptr++ = *yptr++;
+      }
+   }
+
+
+   \n {
+      fprintf(stderr, "Unterminated string: Line %d", yylineno);
+      BEGIN(INITIAL);
+      return STR;
+   }
+
+   \\n  *string_buf_ptr++ = '\n';
+   \\t  *string_buf_ptr++ = '\t';
+   \\r  *string_buf_ptr++ = '\r';
+   \\b  *string_buf_ptr++ = '\b';
+   \\f  *string_buf_ptr++ = '\f';
+
+   \\(.|\n)  *string_buf_ptr++ = yytext[1];
+
+   \" {
+      /* string ended */
+      BEGIN(INITIAL);
+      *string_buf_ptr = '\0';
+      return STR;
+   }
+}
 
 
 "**"                { return POW; }
@@ -51,39 +98,6 @@ echo          return ECHO_STMT;
 ";"|"="|","|"."     { return yytext[0]; }
 
 
-
-\"      string_buf_ptr = string_buf; BEGIN(str);
-
-<str>{
-[^\\\n\"]+   { /* default: no escape sequence, newline or closing quote */
-              char *yptr = yytext;
-
-              while ( *yptr )
-                 *string_buf_ptr++ = *yptr++;
-             }
-
-\n        {
-        /* error - unterminated string constant */
-        /* generate error message */
-        }
-
-\\n  *string_buf_ptr++ = '\n';
-\\t  *string_buf_ptr++ = '\t';
-\\r  *string_buf_ptr++ = '\r';
-\\b  *string_buf_ptr++ = '\b';
-\\f  *string_buf_ptr++ = '\f';
-
-\\(.|\n)  *string_buf_ptr++ = yytext[1];
-
-\"      { /* string ended */
-        BEGIN(INITIAL);
-        *string_buf_ptr = '\0';
-        /* return string constant token type and
-         * value to parser
-         */
-        }
-}
-
 <<EOF>>       return EOF;
 
 .             { 
@@ -92,4 +106,3 @@ echo          return ECHO_STMT;
                 yyerror(s);
                 return 0;
               }
-

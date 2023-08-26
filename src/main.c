@@ -4,7 +4,7 @@
 #include "../include/util.h"
 
 int main(int argc, char *argv[]) {
-  // yydebug = 1;
+  //yydebug = 1;
 
   // Check args
   if (argc == 1) {

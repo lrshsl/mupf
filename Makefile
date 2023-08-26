@@ -23,7 +23,7 @@ YFLAGS_DBG = -d --color=yes -t --warnings=all \
 				 -g --html=build/out/graph.html \
 				 --locations --file-prefix=dbg \
 				 --report=all, --report-file=build/out/report \
-				 -Wcounterexamples
+				 -Wcounterexamples -v
 # Flags:
 # 	-d		Produce header
 # 	-t		Debug information
