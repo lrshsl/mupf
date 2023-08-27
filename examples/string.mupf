@@ -4,4 +4,7 @@
 "this is a string as well"; // Comment
 
 
-// "str" <> "-" <> "concat";
+"str" <> "-" <> "concat";
+
+
+// "this is a comment, not a string"

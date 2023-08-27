@@ -17,8 +17,7 @@
 
 
 ws          [ \t]+
-cmt         \/\/[^\n\r\cr]*
-lf          [\r\n\cr{cmt}]+
+lf          [\r\n\cr]+
 id          [a-zA-Z_][a-zA-Z0-9_]*
 num         [0-9][0-9_]*(\.?[0-9_]+)?
 
@@ -26,8 +25,8 @@ num         [0-9][0-9_]*(\.?[0-9_]+)?
         char string_buf[MAX_STR_CONST];
         char *string_buf_ptr;
 
-%x str
-%x cmt
+%x lstate_str
+%x lstate_cmt
 
 %%
 
@@ -42,23 +41,23 @@ echo          return ECHO_STMT;
 {num}         { yylval.num = atoi(yytext); return NUM; }
 
 
-"//"          BEGIN(cmt);
+"//"          BEGIN(lstate_cmt);
 
-<cmt>{
+<lstate_cmt>{
    [^\n\/]+  while (*yytext++) { }
 
    "//" BEGIN(INITIAL);
-   "\n" BEGIN(INITIAL);
+   {lf} BEGIN(INITIAL);
 
    "/"  yytext++;
 }
 
 
-\"           { string_buf_ptr = string_buf; BEGIN(str); }
+\"           { string_buf_ptr = string_buf; BEGIN(lstate_str); }
 
-<str>{
+<lstate_str>{
    [^\\\n\"]+ {
-      /* default: no escape sequence, newline or closing quote */
+      /* Default: no escape sequence, newline or closing quote */
       char *yptr = yytext;
 
       while ( *yptr ) {
@@ -68,8 +67,13 @@ echo          return ECHO_STMT;
 
 
    \n {
-      fprintf(stderr, "Unterminated string: Line %d", yylineno);
+   /* Error */
+      char s[26];
+      sprintf(s, "Unterminated string: Line %d", yylineno);
+      yyerror(s);
+      /* Recover */
       BEGIN(INITIAL);
+      yylval.str = string_buf;
       return STR;
    }
 
@@ -85,6 +89,7 @@ echo          return ECHO_STMT;
       /* string ended */
       BEGIN(INITIAL);
       *string_buf_ptr = '\0';
+      yylval.str = string_buf;
       return STR;
    }
 }

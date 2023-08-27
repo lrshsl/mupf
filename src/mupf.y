@@ -52,8 +52,8 @@ line:
 
 
 exp:
-  n_exp           { printf("[[ParsedNumExpression]] %d\n", $1); }
-| ch_exp          { printf("[[ParsedCharExpression]] %s\n", $1); $<str>$ = $1; }
+  n_exp           { printf("<Parser::exp>Parsed n_exp: %d\n", $1); }
+| ch_exp          { printf("<Parser::exp>Paresd ch_exp: %s\n", $1); $<str>$ = $1; }
 ;
 
 n_exp:
@@ -68,22 +68,23 @@ n_exp:
 ;
 
 ch_exp:
-  ch_exp OP_CONCAT ch_exp  {
+  ch_exp OP_CONCAT ch_exp {
     char *result = (char *)malloc((strlen($1) + strlen($3)) * sizeof(char));
     if (!$$) {
-       yyerror("Can't allocate more memory for str concatenation!\n");
-       exit(2);
+      yyerror("<Parser::ch_exp>Can't allocate more memory for str concatenation!\n");
+      exit(2);
     } else {
-       strcpy(result, $1);
-       strcat(result, $3);
+      strcpy(result, $1);
+      strcat(result, $3);
     }
-    printf("Concatenating strings: %s + %s = %s\n", $1, $3, result);
-    $$ = result; }
+    printf("<Parser::ch_exp>Concatenating strings: %s + %s = %s\n", $1, $3, result);
+    $$ = result;
+  }
 | STR
 ;
 
 stmt:
-	ECHO_STMT ch_exp     { printf("%s\n", $2); }
+	ECHO_STMT ch_exp     { fprintf(prog_output_file, "%s\n", $2); }
 ;
 
 

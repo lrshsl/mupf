@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <bits/types/FILE.h>
 
 #define YYDEBUG 0
 
