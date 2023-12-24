@@ -1,5 +1,5 @@
 # mupf
-Yet another Markup language with yet another compiler built using yet another compiler compiler .. you get the idea
+Yet another markup language with yet another compiler built using yet another compiler compiler .. you get the idea
 
 
 ### Progress
