@@ -1,14 +1,23 @@
 
 %{
 
-    #include "stdio.h"
-    #include "../build/mupf.tab.h"
-    #include "../include/includes.h"
-    #include "../include/util.h"
+#ifndef MUPF_L
+#define MUPF_L
 
-    // TODO: fix id regex
+#include "stdio.h"
+#include "../build/mupf.tab.h"
+#include "../include/includes.h"
+#include "../include/util.h"
 
-    #define MAX_STR_CONST 1000
+   // TODO: fix id regex
+
+#define MAX_STR_CONST 1000
+
+char string_buf[MAX_STR_CONST];
+char *strbuf_ptr;
+
+#endif
+
 %}
 
 %option noyywrap
@@ -20,10 +29,6 @@ ws          [ \t]+
 lf          [\r\n\cr]+
 id          [a-zA-Z_][a-zA-Z0-9_]*
 num         [0-9][0-9_]*(\.?[0-9_]+)?
-
-
-        char string_buf[MAX_STR_CONST];
-        char *string_buf_ptr;
 
 %x lstate_str
 %x lstate_cmt
@@ -44,16 +49,16 @@ echo          return ECHO_STMT;
 "//"          BEGIN(lstate_cmt);
 
 <lstate_cmt>{
-   [^\n\/]+  while (*yytext++) { }
+   [^\n\/]+    while (*yytext++) { }
 
-   "//" BEGIN(INITIAL);
-   {lf} BEGIN(INITIAL);
+   "//"        BEGIN(INITIAL);
+   {lf}        BEGIN(INITIAL);
 
-   "/"  yytext++;
+   "/"         yytext++;
 }
 
 
-\"           { string_buf_ptr = string_buf; BEGIN(lstate_str); }
+\"           { strbuf_ptr = string_buf; BEGIN(lstate_str); }
 
 <lstate_str>{
    [^\\\n\"]+ {
@@ -61,14 +66,14 @@ echo          return ECHO_STMT;
       char *yptr = yytext;
 
       while ( *yptr ) {
-         *string_buf_ptr++ = *yptr++;
+         *strbuf_ptr++ = *yptr++;
       }
    }
 
 
    \n {
-   /* Error */
-      char s[26];
+      /* Error */
+      char s[28];
       sprintf(s, "Unterminated string: Line %d", yylineno);
       yyerror(s);
       /* Recover */
@@ -77,18 +82,18 @@ echo          return ECHO_STMT;
       return STR;
    }
 
-   \\n  *string_buf_ptr++ = '\n';
-   \\t  *string_buf_ptr++ = '\t';
-   \\r  *string_buf_ptr++ = '\r';
-   \\b  *string_buf_ptr++ = '\b';
-   \\f  *string_buf_ptr++ = '\f';
+   \\n  *strbuf_ptr++ = '\n';
+   \\t  *strbuf_ptr++ = '\t';
+   \\r  *strbuf_ptr++ = '\r';
+   \\b  *strbuf_ptr++ = '\b';
+   \\f  *strbuf_ptr++ = '\f';
 
-   \\(.|\n)  *string_buf_ptr++ = yytext[1];
+   \\(.|\n)  *strbuf_ptr++ = yytext[1];
 
    \" {
       /* string ended */
       BEGIN(INITIAL);
-      *string_buf_ptr = '\0';
+      *strbuf_ptr = '\0';
       yylval.str = string_buf;
       return STR;
    }
@@ -106,8 +111,9 @@ echo          return ECHO_STMT;
 <<EOF>>       return EOF;
 
 .             { 
-                char s[24];
-                sprintf(s, "Unexpected character: %c", yytext[0]);
-                yyerror(s);
-                return 0;
-              }
+   char s[24];
+   sprintf(s, "Unexpected character: %c", yytext[0]);
+   yyerror(s);
+   return 0;
+}
+

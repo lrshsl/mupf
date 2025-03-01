@@ -3,8 +3,13 @@
 #include "../include/includes.h"
 #include "../include/util.h"
 
+FILE *prog_output_file;
+
 int main(int argc, char *argv[]) {
-  //yydebug = 1;
+  prog_output_file = fopen("../prog_output", "w");
+  if (!prog_output_file) {
+    yyerror("Could not open file 'prog_output'");
+  }
 
   // Check args
   if (argc == 1) {
@@ -34,7 +39,7 @@ int main(int argc, char *argv[]) {
       argstr[len++] = ' ';
       if (len > 1000) {
         yyerror("<<Internal Error>> msg of 'file-not-found error' longer than "
-                "1000 chars\n");
+                "1000 chars\n"); /* Haha, error failed */
         return 2;
       }
     }
